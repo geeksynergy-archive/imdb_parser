@@ -1,0 +1,15 @@
+{
+  "name": "imdb_scrapper",
+  "version": "1.0.0",
+  "description": "scrape the site of imdb based on id's",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crawler": "^1.2.1"
+  }
+}
