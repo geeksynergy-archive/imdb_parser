@@ -108,6 +108,7 @@ var c = new Crawler({
                     }
                 }
 
+		$(".title_wrapper > h1:nth-child(1) > #titleYear").remove()
                 var val_Title = $(".title_wrapper > h1:nth-child(1)").text().trim();
                 var val_Year = $("a[href*='/year/']").text().trim();
                 var val_Rated = isEmptyObject(imdb_schema.contentRating) ? 'Not Rated' : imdb_schema.contentRating;
@@ -211,6 +212,7 @@ fs.createReadStream('IMDB\ TT\ Lists/150\ Super\ Hero\ Films_\ Batman,\ Spider-M
         //c.queue();
         console.log(row.URL);
         c.queue(row.URL);
+        //c.queue(default_imdblink + row.imdb_link);
     })
     .on('end', () => {
         console.log('CSV file successfully processed');
