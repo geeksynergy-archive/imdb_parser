@@ -25,8 +25,8 @@ fs.readFile('imdb_scraped.json', 'utf8', function readFileCallback(err, data) {
 
 
 var c = new Crawler({
-    maxConnections: 1,
-    rateLimit: 1,
+    maxConnections: 30,
+    rateLimit: 30,
     callback: function(error, res, done) {
         if (error) {
             console.log(error);
@@ -108,9 +108,10 @@ var c = new Crawler({
                     }
                 }
 
+	   	var val_Year = $("a[href*='/year/']").text().trim();
 		$(".title_wrapper > h1:nth-child(1) > #titleYear").remove()
                 var val_Title = $(".title_wrapper > h1:nth-child(1)").text().trim();
-                var val_Year = $("a[href*='/year/']").text().trim();
+                //var val_Year = $("a[href*='/year/']").text().trim();
                 var val_Rated = isEmptyObject(imdb_schema.contentRating) ? 'Not Rated' : imdb_schema.contentRating;
                 //var val_Released = $("h4:contains('Release Date:')").parent().clone().children().remove().end().text().trim();
                 var val_Released = isEmptyObject(imdb_schema.datePublished) ? '' : imdb_schema.datePublished;
