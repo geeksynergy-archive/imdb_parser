@@ -94,7 +94,7 @@ var c = new Crawler({
                     //console.log(personsdata_array);
                     var list_persons = '';
                     if (!Array.isArray(personsdata_array) || !personsdata_array.length) {
-                        return personsdata_array.name;
+                        return list_persons;
                     } else {
                         personsdata_array.forEach((ind_director) => {
                             //console.log(ind_director);
@@ -115,7 +115,7 @@ var c = new Crawler({
                 var val_Rated = isEmptyObject(imdb_schema.contentRating) ? 'Not Rated' : imdb_schema.contentRating;
                 //var val_Released = $("h4:contains('Release Date:')").parent().clone().children().remove().end().text().trim();
                 var val_Released = isEmptyObject(imdb_schema.datePublished) ? '' : imdb_schema.datePublished;
-                var val_Runtime = $(".title_wrapper > div > time").attr("datetime").trim().replace('PT', '').replace('M', '').replace('H', '').replace('S', '') + " min";
+                var val_Runtime = ($(".title_wrapper > div > time").attr("datetime") == undefined) ? '' : $(".title_wrapper > div > time").attr("datetime").trim().replace('PT', '').replace('M', '').replace('H', '').replace('S', '') + " min";
                 //var val_Genre = $("h4:contains('Genres:')").parent().clone().children("a[href*='/search/title?genres=']").text().trim();
                 var val_Genre = imdb_schema.genre;
                 //var val_Director = $("h4:contains('Director:','Directors:')").parent().children("a").text();
@@ -160,7 +160,7 @@ var c = new Crawler({
                     "Rated": val_Rated,
                     "Released": val_Released,
                     "Runtime": val_Runtime,
-                    "Genre": val_Genre,
+                    "Genre": (val_Genre == undefined) ? '' : val_Genre,
                     "Director": val_Director,
                     "Writer": val_Writer,
                     "Actors": val_Actors,
@@ -188,7 +188,7 @@ var c = new Crawler({
                     if (err) console.log('error', err);
                 });
             } catch (ex) {
-                console.log("Error Occured" + ex);
+                console.log("Error Occured" + ex + " > "+res.$("meta[property='pageId']").attr("content").trim());
             }
 
         }
@@ -204,6 +204,29 @@ var c = new Crawler({
 //c.queue(default_imdblink + 'tt0066763');
 //c.queue(default_imdblink + 'tt0111161');
 //c.queue(default_imdblink + 'tt1375666');
+//c.queue(default_imdblink + 'tt8268972');
+
+// Create a link from the some random page 
+var r = new Crawler({
+    rateLimit: 1000, // `maxConnections` will be forced to 1
+    callback: function(err, res, done){
+        var $ = res.$;
+	var count = 0;
+        console.log($("title").text());
+        console.log($('a[href]').map(function () {
+          if($(this).attr("href").indexOf('/title/tt') > -1 ){
+		if($(this).attr("href").match('(?:\/title\/|\G)(.*)\/')) {
+			console.log( ++count + '. ' + $(this).attr("href").match('(?:\/title\/|\G)(.*)\/')[1]);
+			c.queue(default_imdblink + $(this).attr("href").match('(?:\/title\/|\G)(.*)\/')[1]);
+		}
+		//return $(this).attr("href");
+	  }
+        }).get());
+     done();
+    }
+});
+
+r.queue('https://www.imdb.com/name/nm0024259/');
 
 
 fs.createReadStream('IMDB\ TT\ Lists/150\ Super\ Hero\ Films_\ Batman,\ Spider-Man,\ Superman.csv') //('movie_id.csv')  
@@ -211,10 +234,12 @@ fs.createReadStream('IMDB\ TT\ Lists/150\ Super\ Hero\ Films_\ Batman,\ Spider-M
     .on('data', (row) => {
         //console.log(row);
         //c.queue();
-        console.log(row.URL);
-        c.queue(row.URL);
+        //console.log(row.URL);
+        //c.queue(row.URL);
         //c.queue(default_imdblink + row.imdb_link);
     })
     .on('end', () => {
         console.log('CSV file successfully processed');
     });
+
+
